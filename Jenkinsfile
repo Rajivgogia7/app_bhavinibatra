@@ -5,7 +5,11 @@ pipeline {
    environment{
        scannerHome = tool 'sonar_scanner_dotnet'
        username = 'bhavinibatra'
-       registry = 'bhavinibatra/test'
+       registry = 'bhavinibatra/test-develop'
+       project_id = 'test-project-321516'
+       cluster_name = 'test-cluster'
+       location = 'us-central1-c'
+       credentials_id = 'test-project'
     }
 
   stages {
@@ -68,8 +72,10 @@ pipeline {
       stage('Move image to DockerHub') {
       steps {
              bat "docker tag i-${username}-developtest ${registry}:${BUILD_NUMBER}"
+              bat "docker tag i-${username}-developtest ${registry}:latest"
              withDockerRegistry([credentialsId: 'DockerHub', url:""]){
              bat "docker push ${registry}:${BUILD_NUMBER}"
+             bat "docker push ${registry}:latest"
              }
         
       }
@@ -79,6 +85,18 @@ pipeline {
              bat "docker run --name c-${username}-developtest -d -p 7700:80 ${registry}:${BUILD_NUMBER}"
             
       }
+    }
+      stage('Docker to GKE') {
+         steps{
+             step([$class: 'KubernetesEngineBuilder',
+             projectId: env.project_id, 
+             clusterName: env.cluster_name,
+             location: env.location, 
+             manifestPattern: 'Deployment.yaml', 
+             credentialsId: env.credentials_id, 
+             verifyDeployments: true])
+         }
+      
     }
 
 
