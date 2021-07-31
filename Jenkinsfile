@@ -72,7 +72,7 @@ pipeline {
       stage('Move image to DockerHub') {
       steps {
              bat "docker tag i-${username}-mastertest ${registry}:${BUILD_NUMBER}"
-              bat "docker tag i-${username}-master ${registry}:latest"
+              bat "docker tag i-${username}-mastertest ${registry}:latest"
              withDockerRegistry([credentialsId: 'DockerHub', url:""]){
              bat "docker push ${registry}:${BUILD_NUMBER}"
               bat "docker push ${registry}:latest"
