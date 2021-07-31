@@ -12,7 +12,7 @@ pipeline {
     stage('Checkout') {
       steps {
         checkout([$class: 'GitSCM', branches: [
-          [name: '*/main']
+          [name: '*/master']
         ], userRemoteConfigs: [
           [credentialsId: 'GitCreds', url: 'https://github.com/BhaviniB/nagp-jenkins-1']
         ]])
@@ -20,7 +20,7 @@ pipeline {
     }
     stage('Restore packages') {
       steps {
-        bat "dotnet restore Hello-World-DotNetCore-master\\WebApplication4\\WebApplication4.csproj"
+        bat "dotnet restore WebApplication4\\WebApplication4.csproj"
       }
     }
                 stage('Start Sonar Analysis') {
@@ -34,15 +34,15 @@ pipeline {
 
     stage('Build') {
       steps {
-        bat 'dotnet clean Hello-World-DotNetCore-master\\WebApplication4\\WebApplication4.csproj'
+        bat 'dotnet clean WebApplication4\\WebApplication4.csproj'
 
-        bat 'dotnet build Hello-World-DotNetCore-master\\WebApplication4\\WebApplication4.csproj -c Release -o "WebApplication4/app/build"'
+        bat 'dotnet build WebApplication4\\WebApplication4.csproj -c Release -o "WebApplication4/app/build"'
 
       }
     }
     stage('Automated Unit Testing') {
       steps {
-        bat 'dotnet test Hello-World-DotNetCore-master'
+        bat 'dotnet test .'
 
       }
     }
@@ -58,9 +58,9 @@ pipeline {
     
       stage('Build Docker Image') {
       steps {
-             bat "dotnet publish Hello-World-DotNetCore-master\\WebApplication4\\WebApplication4.csproj"
+             bat "dotnet publish WebApplication4\\WebApplication4.csproj"
              
-            bat "docker build -t i-${username}-master --no-cache Hello-World-DotNetCore-master"
+            bat "docker build -t i-${username}-master --no-cache ."
         
       }
     }
@@ -76,7 +76,7 @@ pipeline {
     }
      stage('Docker Deployment') {
       steps {
-             bat "docker run --name c-${username}-master -d -p 7100:80 ${registry}:${BUILD_NUMBER}"
+             bat "docker run --name c-${username}-master -d -p 7700:80 ${registry}:${BUILD_NUMBER}"
             
       }
     }
