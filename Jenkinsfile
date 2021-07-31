@@ -5,16 +5,16 @@ pipeline {
    environment{
        scannerHome = tool 'sonar_scanner_dotnet'
        username = 'bhavinibatra'
-       registry = 'bhavinibatra/nagp-jenkins-1'
+       registry = 'bhavinibatra/test'
     }
 
   stages {
     stage('Checkout') {
       steps {
         checkout([$class: 'GitSCM', branches: [
-          [name: '*/master']
+          [name: '*/develop']
         ], userRemoteConfigs: [
-          [credentialsId: 'GitCreds', url: 'https://github.com/BhaviniB/nagp-jenkins-1']
+          [credentialsId: 'GitCreds', url: 'https://github.com/BhaviniB/test']
         ]])
       }
     }
@@ -60,14 +60,14 @@ pipeline {
       steps {
              bat "dotnet publish WebApplication4\\WebApplication4.csproj"
              
-            bat "docker build -t i-${username}-master --no-cache ."
+            bat "docker build -t i-${username}-developtest --no-cache ."
         
       }
     }
      
       stage('Move image to DockerHub') {
       steps {
-             bat "docker tag i-${username}-master ${registry}:${BUILD_NUMBER}"
+             bat "docker tag i-${username}-developtest ${registry}:${BUILD_NUMBER}"
              withDockerRegistry([credentialsId: 'DockerHub', url:""]){
              bat "docker push ${registry}:${BUILD_NUMBER}"
              }
@@ -76,7 +76,7 @@ pipeline {
     }
      stage('Docker Deployment') {
       steps {
-             bat "docker run --name c-${username}-master -d -p 7700:80 ${registry}:${BUILD_NUMBER}"
+             bat "docker run --name c-${username}-developtest -d -p 7700:80 ${registry}:${BUILD_NUMBER}"
             
       }
     }
