@@ -1,5 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
+namespace: kubernetes-cluster-bhavinibatra
 metadata:
   name: dotnet-app-deployment-test-master
   labels:
