@@ -44,12 +44,6 @@ pipeline {
 
       }
     }
-    stage('Automated Unit Testing') {
-      steps {
-        bat 'dotnet test .'
-
-      }
-    }
         
          stage('End Sonar Analysis') {
       steps {
