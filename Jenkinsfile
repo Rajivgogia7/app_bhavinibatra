@@ -35,15 +35,23 @@ pipeline {
 
       }
     }
+
+     stage('Release artifact') {
+      steps {
+             bat "dotnet publish WebApplication4\\WebApplication4.csproj"
+
+      }
+    }
        
       stage('Build Docker Image') {
       steps {
-             bat "dotnet publish WebApplication4\\WebApplication4.csproj"
              
             bat "docker build -t i-${username}-developtest --no-cache ."
         
       }
     }
+
+    
      
       stage('Move image to DockerHub') {
       steps {
