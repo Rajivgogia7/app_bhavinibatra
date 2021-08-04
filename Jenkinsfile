@@ -3,7 +3,6 @@ pipeline {
   agent any
   
    environment{
-       scannerHome = tool 'sonar_scanner_dotnet'
        username = 'bhavinibatra'
        registry = 'bhavinibatra/test-develop'
        project_id = 'test-project-321516'
@@ -27,14 +26,6 @@ pipeline {
         bat "dotnet restore WebApplication4\\WebApplication4.csproj"
       }
     }
-                stage('Start Sonar Analysis') {
-      steps {
-        withSonarQubeEnv('Test_Sonar'){
-            bat "${scannerHome}\\SonarScanner.MSBuild.exe begin /k:WebApplication4 /n:WebApplication4 /v:1.0"
-        }
-        
-      }
-    }
 
     stage('Build') {
       steps {
@@ -44,22 +35,7 @@ pipeline {
 
       }
     }
-    stage('Automated Unit Testing') {
-      steps {
-        bat 'dotnet test .'
-
-      }
-    }
-        
-         stage('End Sonar Analysis') {
-      steps {
-        withSonarQubeEnv('Test_Sonar'){
-            bat "${scannerHome}\\SonarScanner.MSBuild.exe end"
-        }
-        
-      }
-    }
-    
+       
       stage('Build Docker Image') {
       steps {
              bat "dotnet publish WebApplication4\\WebApplication4.csproj"
