@@ -4,11 +4,7 @@ pipeline {
   
    environment{
        username = 'bhavinibatra'
-       registry = 'bhavinibatra/test-develop'
-       project_id = 'test-project-321516'
-       cluster_name = 'test-cluster'
-       location = 'us-central1-c'
-       credentials_id = 'test-project'
+       registry = 'bhavinibatra/develop'
     }
 
   stages {
@@ -17,7 +13,7 @@ pipeline {
         checkout([$class: 'GitSCM', branches: [
           [name: '*/develop']
         ], userRemoteConfigs: [
-          [credentialsId: 'GitCreds', url: 'https://github.com/BhaviniB/test']
+          [credentialsId: 'GitCreds', url: 'https://github.com/BhaviniB/app_bhavinibatra']
         ]])
       }
     }
@@ -46,17 +42,23 @@ pipeline {
       stage('Build Docker Image') {
       steps {
              
-            bat "docker build -t i-${username}-developtest --no-cache ."
+            bat "docker build -t i-${username}-develop --no-cache ."
         
       }
     }
-
-    
-     
+    stage('Containers'){
+      parallel{
+        stage('Pre-container check'){
+          steps{
+            bat 'docker rm -f c-bhavinibatra-develop && echo "container c-bhavinibatra-develop removed"
+            || echo "container c-bhavinibatra-develop does not exist."
+            '
+          }
+        }
       stage('Move image to DockerHub') {
       steps {
-             bat "docker tag i-${username}-developtest ${registry}:${BUILD_NUMBER}"
-              bat "docker tag i-${username}-developtest ${registry}:latest"
+             bat "docker tag i-${username}-develop ${registry}:${BUILD_NUMBER}"
+              bat "docker tag i-${username}-develop ${registry}:latest"
              withDockerRegistry([credentialsId: 'DockerHub', url:""]){
              bat "docker push ${registry}:${BUILD_NUMBER}"
              bat "docker push ${registry}:latest"
@@ -64,23 +66,19 @@ pipeline {
         
       }
     }
+      }
+    }
+
      stage('Docker Deployment') {
       steps {
-             bat "docker run --name c-${username}-developtest -d -p 7700:80 ${registry}:${BUILD_NUMBER}"
+             bat "docker run --name c-${username}-develop -d -p 7300:80 ${registry}:${BUILD_NUMBER}"
             
       }
     }
-      stage('Docker to GKE') {
-         steps{
-             step([$class: 'KubernetesEngineBuilder',
-             projectId: env.project_id, 
-             clusterName: env.cluster_name,
-             location: env.location, 
-             manifestPattern: 'Deployment.yaml', 
-             credentialsId: env.credentials_id, 
-             verifyDeployments: true])
-         }
-      
+    stage('Kubernetes Deployment'){
+      steps{
+        bat "kubectl apply -f deployment.yaml"
+      }
     }
 
 
