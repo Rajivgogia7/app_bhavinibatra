@@ -63,9 +63,8 @@ pipeline {
       parallel{
         stage('Pre-container check'){
           steps{
-            bat 'docker rm -f c-bhavinibatra-master && echo "container c-bhavinibatra-master removed"
-            || echo "container c-bhavinibatra-master does not exist."
-            '
+            bat 'docker rm -f c-bhavinibatra-master'
+            
           }
         }
       stage('Move image to DockerHub') {
