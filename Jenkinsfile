@@ -46,7 +46,14 @@ pipeline {
         
       }
     }
- 
+    stage('Containers'){
+      parallel{
+        stage('Pre-container check'){
+          steps{
+            bat 'docker rm -f c-bhavinibatra-develop'
+            
+          }
+        }
       stage('Move image to DockerHub') {
       steps {
              bat "docker tag i-${username}-develop ${registry}:${BUILD_NUMBER}"
@@ -56,6 +63,8 @@ pipeline {
              bat "docker push ${registry}:latest"
              }
         
+      }
+    }
       }
     }
 
