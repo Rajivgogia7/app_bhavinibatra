@@ -2,37 +2,37 @@ apiVersion: apps/v1
 kind: Deployment
 namespace: kubernetes-cluster-bhavinibatra
 metadata:
-  name: dotnet-app-deployment-test-master
+  name: dotnet-app-deployment-master
   labels:
-    app: dotnet-app-test-master
-spec: 
-  replicas: 3
+    app: dotnet-app-master
+spec:
+  replicas: 4
   selector:
     matchLabels:
-        app: dotnet-app-test-master
+      app: dotnet-app-master
   template:
     metadata:
-        labels:
-          app: dotnet-app-test-master
+      labels:
+        app: dotnet-app-master
     spec:
       containers:
-        - name: dotnet-app-test-master
-          image: bhavinibatra/test-master:latest
+        - name: dotnet-app-master
+          image: bhavinibatra/master:latest
           ports:
-            -  name: http
-               containerPort: 80
-               protocol: TCP
+            - name: http
+              containerPort: 80
+              protocol: TCP
 ---
 apiVersion: v1
 kind: Service
-metadata: 
-    name: dotnet-app-test-master
-spec: 
-   type: NodePort
-   selector:
-       app: dotnet-app-test-master
-   ports:
-      - protocol: TCP
-        nodePort: 30150
-        port: 80
-        targetPort: 80
+metadata:
+  name: dotnet-app-master
+spec:
+  type: NodePort
+  selector:
+    app: dotnet-app-master
+  ports:
+    - protocol: TCP
+      nodePort: 30157
+      port: 80
+      targetPort: 80

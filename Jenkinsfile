@@ -5,11 +5,7 @@ pipeline {
    environment{
        scannerHome = tool 'sonar_scanner_dotnet'
        username = 'bhavinibatra'
-       registry = 'bhavinibatra/test-master'
-       project_id = 'test-project-321516'
-       cluster_name = 'test-cluster'
-       location = 'us-central1-c'
-       credentials_id = 'test-project'
+       registry = 'bhavinibatra/master'
     }
 
   stages {
@@ -18,7 +14,7 @@ pipeline {
         checkout([$class: 'GitSCM', branches: [
           [name: '*/master']
         ], userRemoteConfigs: [
-          [credentialsId: 'GitCreds', url: 'https://github.com/BhaviniB/test']
+          [credentialsId: 'GitCreds', url: 'https://github.com/BhaviniB/app_bhavinibatra']
         ]])
       }
     }
@@ -27,7 +23,7 @@ pipeline {
         bat "dotnet restore WebApplication4\\WebApplication4.csproj"
       }
     }
-                stage('Start Sonar Analysis') {
+      stage('Start Sonar Analysis') {
       steps {
         withSonarQubeEnv('Test_Sonar'){
             bat "${scannerHome}\\SonarScanner.MSBuild.exe begin /k:WebApplication4 /n:WebApplication4 /v:1.0"
@@ -36,7 +32,7 @@ pipeline {
       }
     }
 
-    stage('Build') {
+    stage('Code Build') {
       steps {
         bat 'dotnet clean WebApplication4\\WebApplication4.csproj'
 
@@ -45,7 +41,7 @@ pipeline {
       }
     }
         
-         stage('End Sonar Analysis') {
+         stage('Stop Sonar Analysis') {
       steps {
         withSonarQubeEnv('Test_Sonar'){
             bat "${scannerHome}\\SonarScanner.MSBuild.exe end"
@@ -58,41 +54,42 @@ pipeline {
       steps {
              bat "dotnet publish WebApplication4\\WebApplication4.csproj"
              
-            bat "docker build -t i-${username}-mastertest --no-cache ."
+            bat "docker build -t i-${username}-master --no-cache ."
         
       }
     }
      
+    stage('Containers'){
+      parallel{
+        stage('Pre-container check'){
+          steps{
+            bat 'docker rm -f c-bhavinibatra-master && echo "container c-bhavinibatra-master removed"
+            || echo "container c-bhavinibatra-master does not exist."
+            '
+          }
+        }
       stage('Move image to DockerHub') {
       steps {
-             bat "docker tag i-${username}-mastertest ${registry}:${BUILD_NUMBER}"
-              bat "docker tag i-${username}-mastertest ${registry}:latest"
+             bat "docker tag i-${username}-master ${registry}:${BUILD_NUMBER}"
              withDockerRegistry([credentialsId: 'DockerHub', url:""]){
              bat "docker push ${registry}:${BUILD_NUMBER}"
-              bat "docker push ${registry}:latest"
              }
         
       }
     }
+      }
+    }
      stage('Docker Deployment') {
       steps {
-             bat "docker run --name c-${username}-mastertest -d -p 7800:80 ${registry}:${BUILD_NUMBER}"
+             bat "docker run --name c-${username}-master -d -p 7200:80 ${registry}:${BUILD_NUMBER}"
             
       }
     }
-         stage('Docker to GKE') {
-         steps{
-             step([$class: 'KubernetesEngineBuilder',
-             projectId: env.project_id, 
-             clusterName: env.cluster_name,
-             location: env.location, 
-             manifestPattern: 'Deployment.yaml', 
-             credentialsId: env.credentials_id, 
-             verifyDeployments: true])
-         }
-      
+    stage('Kubernetes Deployment'){
+      steps{
+        bat "kubectl apply -f deployment.yaml"
+      }
     }
-
 
   }
 
