@@ -51,7 +51,7 @@ pipeline {
         stage('Pre-container check'){
           steps{
             bat 'docker rm -f c-bhavinibatra-develop'
-            '
+            
           }
         }
       stage('Move image to DockerHub') {
