@@ -18,12 +18,12 @@ pipeline {
         ]])
       }
     }
-    stage('Restore packages') {
+    stage('Nuget Restore') {
       steps {
         bat "dotnet restore WebApplication4\\WebApplication4.csproj"
       }
     }
-      stage('Start Sonar Analysis') {
+      stage('Start Sonarqube Analysis') {
       steps {
         withSonarQubeEnv('Test_Sonar'){
             bat "${scannerHome}\\SonarScanner.MSBuild.exe begin /k:WebApplication4 /n:WebApplication4 /v:1.0"
@@ -41,7 +41,7 @@ pipeline {
       }
     }
         
-         stage('Stop Sonar Analysis') {
+         stage('Stop Sonarqube Analysis') {
       steps {
         withSonarQubeEnv('Test_Sonar'){
             bat "${scannerHome}\\SonarScanner.MSBuild.exe end"
@@ -50,7 +50,7 @@ pipeline {
       }
     }
     
-      stage('Build Docker Image') {
+      stage('Docker Image') {
       steps {
              bat "dotnet publish WebApplication4\\WebApplication4.csproj"
              
@@ -67,7 +67,7 @@ pipeline {
             
           }
         }
-      stage('Move image to DockerHub') {
+      stage('Push to DockerHub') {
       steps {
              bat "docker tag i-${username}-master ${registry}:${BUILD_NUMBER}"
               bat "docker tag i-${username}-master ${registry}:latest"
