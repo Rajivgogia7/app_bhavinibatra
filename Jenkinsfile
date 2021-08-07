@@ -62,6 +62,13 @@ pipeline {
     stage('Containers'){
       parallel{
         stage('Pre-container check'){
+          environment{
+containerId = bat 'docker ps -aqf "name=^c-bhavinibatra-master$"'
+}
+when{
+expression{
+return containerId !=null}
+}
           steps{
             bat 'docker rm -f c-bhavinibatra-master && echo "container c-bhavinibatra-master removed" || echo "container c-bhavinibatra-master does not exist"'
             
