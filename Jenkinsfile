@@ -62,9 +62,11 @@ pipeline {
     stage('Containers'){
       parallel{
         stage('Pre-container check'){
+
           environment{
           containerId = bat 'docker ps -aqf "name=^c-bhavinibatra-master$"'
           }
+          steps{
             script {
                     if (containerId != null) {
             bat 'docker rm -f c-bhavinibatra-master && echo "container c-bhavinibatra-master removed" || echo "container c-bhavinibatra-master does not exist"'
@@ -72,6 +74,7 @@ pipeline {
                         echo 'No container removal needed.'
                     }
                 }
+          }
         }
       stage('Push to DockerHub') {
       steps {
