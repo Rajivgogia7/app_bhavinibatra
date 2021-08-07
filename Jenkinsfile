@@ -42,7 +42,7 @@ pipeline {
       stage('Docker Image') {
       steps {
              
-            bat "docker build -t i-${username}-develop --no-cache ."
+            bat "docker build -t i-${username}-develop:${BUILD_NUMBER} --no-cache ."
         
       }
     }
@@ -55,10 +55,10 @@ pipeline {
         }
       stage('Push to DockerHub') {
       steps {
-             bat "docker tag i-${username}-develop ${registry}:${BUILD_NUMBER}"
-              bat "docker tag i-${username}-develop ${registry}:latest"
+             bat "docker tag i-${username}-develop:${BUILD_NUMBER} ${registry}:i-${username}-develop:${BUILD_NUMBER}"
+              bat "docker tag i-${username}-develop:latest ${registry}:latest"
              withDockerRegistry([credentialsId: 'DockerHub', url:""]){
-             bat "docker push ${registry}:${BUILD_NUMBER}"
+             bat "docker push ${registry}:i-${username}-develop:${BUILD_NUMBER}"
              bat "docker push ${registry}:latest"
              }
         
@@ -69,7 +69,7 @@ pipeline {
 
      stage('Docker Deployment') {
       steps {
-             bat "docker run --name c-${username}-develop -d -p 7300:80 ${registry}:${BUILD_NUMBER}"
+             bat "docker run --name c-${username}-develop -d -p 7300:80 ${registry}:i-${username}-develop:${BUILD_NUMBER}"
             
       }
     }
