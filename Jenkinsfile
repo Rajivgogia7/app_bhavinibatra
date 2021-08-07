@@ -63,7 +63,7 @@ pipeline {
       parallel{
         stage('Pre-container check'){
           steps{
-            bat 'docker rm -f c-bhavinibatra-master'
+            bat 'docker rm -f c-bhavinibatra-master && echo "container c-bhavinibatra-master removed" || echo "container c-bhavinibatra-master does not exist"'
             
           }
         }
