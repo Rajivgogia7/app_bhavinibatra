@@ -26,7 +26,7 @@ pipeline {
       stage('Start Sonarqube Analysis') {
       steps {
         withSonarQubeEnv('Test_Sonar'){
-            bat "${scannerHome}\\SonarScanner.MSBuild.exe begin /k:WebApplication4 /n:WebApplication4 /v:1.0"
+            bat "${scannerHome}\\SonarScanner.MSBuild.exe begin /k:sonar-bhavinibatra /n:sonar-bhavinibatra /v:1.0"
         }
         
       }
