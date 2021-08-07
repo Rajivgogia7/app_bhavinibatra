@@ -17,13 +17,13 @@ pipeline {
         ]])
       }
     }
-    stage('Restore packages') {
+    stage('Nuget Restore') {
       steps {
         bat "dotnet restore WebApplication4\\WebApplication4.csproj"
       }
     }
 
-    stage('Build') {
+    stage('Code Build') {
       steps {
         bat 'dotnet clean WebApplication4\\WebApplication4.csproj'
 
@@ -39,7 +39,7 @@ pipeline {
       }
     }
        
-      stage('Build Docker Image') {
+      stage('Docker Image') {
       steps {
              
             bat "docker build -t i-${username}-develop --no-cache ."
@@ -53,7 +53,7 @@ pipeline {
             bat 'docker rm -f c-bhavinibatra-develop && echo "container c-bhavinibatra-develop removed" || echo "container c-bhavinibatra-develop does not exist"'
           }
         }
-      stage('Move image to DockerHub') {
+      stage('Push to DockerHub') {
       steps {
              bat "docker tag i-${username}-develop ${registry}:${BUILD_NUMBER}"
               bat "docker tag i-${username}-develop ${registry}:latest"
