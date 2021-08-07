@@ -64,7 +64,7 @@ pipeline {
         stage('Pre-container check'){
 
           environment{
-          containerId = bat 'docker ps -aqf "name=^c-bhavinibatra-master$"'
+          containerId = ${bat(script:'docker ps -aqf "name=^c-bhavinibatra-master$"', returnStdout:true).trim().readLines()}
           }
           steps{
             script {
