@@ -69,10 +69,10 @@ pipeline {
         }
       stage('Push to DockerHub') {
       steps {
-             bat "docker tag i-${username}-master:${BUILD_NUMBER} ${registry}:i-${username}-master:${BUILD_NUMBER}"
+             bat "docker tag i-${username}-master:${BUILD_NUMBER} ${registry}:${BUILD_NUMBER}"
               bat "docker tag i-${username}-master:latest ${registry}:latest"
              withDockerRegistry([credentialsId: 'DockerHub', url:""]){
-             bat "docker push ${registry}:i-${username}-master:${BUILD_NUMBER}"
+             bat "docker push ${registry}:${BUILD_NUMBER}"
              bat "docker push ${registry}:latest"
              }
         
@@ -82,7 +82,7 @@ pipeline {
     }
      stage('Docker Deployment') {
       steps {
-             bat "docker run --name c-${username}-master -d -p 7200:80 ${registry}:i-${username}-master:${BUILD_NUMBER}"
+             bat "docker run --name c-${username}-master -d -p 7200:80 ${registry}:${BUILD_NUMBER}"
             
       }
     }
