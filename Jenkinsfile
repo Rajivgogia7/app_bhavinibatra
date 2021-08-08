@@ -72,6 +72,10 @@ pipeline {
                             echo "Removing container: ${env.CONTAINER_ID}"
                             bat "docker rm -f ${env.CONTAINER_ID}"       
                         }
+                        else{
+                            echo "Container removal not needed."
+
+                        }
                    }
                                   
                     }
