@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dotnet-app-deployment-develop
+  namespace: kubernetes-cluster-bhavinibatra
   labels:
     app: dotnet-app-develop
 spec: 
@@ -26,6 +27,7 @@ apiVersion: v1
 kind: Service
 metadata: 
     name: dotnet-app-develop
+    namespace: kubernetes-cluster-bhavinibatra
 spec: 
    type: NodePort
    selector:
@@ -35,10 +37,3 @@ spec:
         nodePort: 30158
         port: 80
         targetPort: 80
----
-apiVersion: v1
-kind: Namespace
-metadata:
-    name: kubernetes-cluster-bhavinibatra
-    labels:
-        name: kubernetes-cluster
