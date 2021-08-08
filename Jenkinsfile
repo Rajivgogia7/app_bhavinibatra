@@ -48,11 +48,21 @@ pipeline {
     }
     stage('Containers'){
       parallel{
-        stage('Pre-container check'){
-          steps{
-            bat 'docker rm -f c-bhavinibatra-develop && echo "container c-bhavinibatra-develop removed" || echo "container c-bhavinibatra-develop does not exist"'
-          }
-        }
+  stage('PreContainerCheck') {
+                    environment {
+                        CONTAINER_ID = "${bat(script:"docker ps -aqf name=c-bhavinibatra-develop", returnStdout: true).trim().readLines().drop(1).join("")}"
+                    }
+                    steps {
+                        echo "Running pre container check"
+                        script {
+                        if(env.CONTAINER_ID != null) {
+                            echo "Removing container: ${env.CONTAINER_ID}"
+                            bat "docker rm -f ${env.CONTAINER_ID}"       
+                        }
+                   }
+                                  
+                    }
+                }  
       stage('Push to DockerHub') {
       steps {
              bat "docker tag i-${username}-develop:${BUILD_NUMBER} ${registry}:${BUILD_NUMBER}"
