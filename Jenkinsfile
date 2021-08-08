@@ -63,7 +63,7 @@ pipeline {
       parallel{
   stage('PreContainerCheck') {
                     environment {
-                        CONTAINER_ID = "${bat(script:"docker ps -aqf name=c-bhavinibatra-master", returnStdout: true).trim().readLines().drop(1).join("")}"
+                        CONTAINER_ID = "${bat(script:'docker ps -aqf name="^c-bhavinibatra-master$"', returnStdout: true).trim().readLines().drop(1).join("")}"
                     }
                     steps {
                         echo "Running pre container check"
