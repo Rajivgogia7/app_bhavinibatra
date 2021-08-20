@@ -14,7 +14,7 @@ pipeline {
         checkout([$class: 'GitSCM', branches: [
           [name: '*/master']
         ], userRemoteConfigs: [
-          [credentialsId: 'GitCreds', url: 'https://github.com/BhaviniB/app_bhavinibatra']
+          [credentialsId: 'GitCreds', url: 'https://github.com/Rajivgogia7/app_bhavinibatra']
         ]])
       }
     }
@@ -26,7 +26,7 @@ pipeline {
       stage('Start Sonarqube Analysis') {
       steps {
         withSonarQubeEnv('Test_Sonar'){
-            bat "${scannerHome}\\SonarScanner.MSBuild.exe begin /k:sonar-bhavinibatra /n:sonar-bhavinibatra /v:1.0"
+            bat "dotnet ${scannerHome}\\SonarScanner.MSBuild.dll begin /k:sonar-bhavinibatra /n:sonar-bhavinibatra /v:1.0"
         }
         
       }
@@ -44,7 +44,7 @@ pipeline {
          stage('Stop Sonarqube Analysis') {
       steps {
         withSonarQubeEnv('Test_Sonar'){
-            bat "${scannerHome}\\SonarScanner.MSBuild.exe end"
+            bat "dotnet ${scannerHome}\\SonarScanner.MSBuild.dll end"
         }
         
       }
