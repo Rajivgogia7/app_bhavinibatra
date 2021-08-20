@@ -13,7 +13,7 @@ pipeline {
         checkout([$class: 'GitSCM', branches: [
           [name: '*/develop']
         ], userRemoteConfigs: [
-          [credentialsId: 'GitCreds', url: 'https://github.com/BhaviniB/app_bhavinibatra']
+          [credentialsId: 'GitCreds', url: 'https://github.com/Rajivgogia7/app_bhavinibatra']
         ]])
       }
     }
